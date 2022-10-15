@@ -16,6 +16,6 @@ Moreover, it was designed for the TW2 protocol from 2014. The bot is not going t
 I don't remember how to properly install it, but I suspect it only requires to install the npm packages
 from the tw2-attack.js
 
-The [tw2-attack.js] is the main script, and uses the tw2-conf.json as configuration  
-The [tw-simu.js] is a tool to simulate progression (IIRC)
+The [tw2-attack.js](tw2-attack.js) is the main script, and uses the tw2-conf.json as configuration  
+The [tw-simu.js](tw2-attack.js) is a tool to simulate progression (IIRC)
 
