@@ -1,0 +1,357 @@
+
+mixin unitImage(name)
+  if name == "spear"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/a/ad/Spearman.png")
+  else if name == "sword"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/5/5a/Swordsman.png")
+  else if name == "axe"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/f/f9/Axe_fighter.png")
+  else if name == "archer"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/2/29/Archer.png")
+  else if name == "light_cavalry"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/f/fc/Light_cavalry.png")
+  else if name == "heavy_cavalry"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/2/2f/Heavy_cavalry.png")
+  else if name == "mounted_archer"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/2/25/Mounted_archer.png")
+  else if name == "ram"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/6/6a/Ram.png")
+  else if name == "catapult"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/5/51/Catapult.png")
+  else if name == "knight"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/b/b2/Paladin.png")
+  else if name == "snob"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/a/a6/Nobleman.png")
+  else if name == "trebuchet"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/c/cf/Trebuchet.png")
+  else if name == "doppelsoldner"
+    img(class="unit-image", alt=name, src="http://wiki.en.tribalwars2.com/images/a/a8/Berserker.png")
+  else
+    = name
+
+mixin unit(unit, name)
+  .unit
+    .pure-g
+      .pure-u-2-3
+        +unitImage(name)
+        = " " + name
+      .pure-u-1-3
+        .value= unit.in_town + " / " +unit.total
+
+mixin recruit(queue)
+  - var progress = Math.floor(queue.recruited / queue.amount * 100);
+  .unit
+    .pure-g
+      .pure-u-1-2
+        +unitImage(queue.unit_type)
+        = queue.unit_type
+      .pure-u-1-4
+        .value= queue.recruited + " / " +queue.amount
+      .pure-u-1-4
+        .value= util.getTime(queue.time_completed)
+    .pure-g
+      .progress.neutral(style='width:' + progress  + '%')
+
+mixin building(village, building, name)
+  .building
+    .pure-g
+      .pure-u-2-3
+        = name
+      .pure-u-1-3
+        .value= building.level
+
+mixin production(village, util)
+  for queue in village.inConstruction.queue
+    .construction
+      .pure-g
+        .pure-u-1-2= queue.building
+        .pure-u-1-4
+          .value= queue.level
+        .pure-u-1-4
+          .value= util.getTime(queue.time_completed)
+      .pure-g
+        - var progress = Math.floor(((new Date().getTime()/1000) - queue.time_started) / (queue.time_completed - queue.time_started) * 100);
+        .progress.neutral(style='width:' + progress  + '%')
+
+mixin troup(village, troup, util)
+  - var distance = Math.floor(util.calculateDistance(village, {x: troup.village.village_x, y: troup.village.village_y}));
+  - var progress = Math.floor(((new Date().getTime()/1000) - troup.time_start) / (troup.time_completed - troup.time_start) * 100);
+  .troup
+    .pure-g
+      .pure-u-2-5
+        = troup.village.village_name.substr(0, 6) + "-"+troup.village.village_id
+        = ' [' + distance + ']'
+        = troup.direction == 'forward' ? ' -> ' : ' <- '
+        = util.getTime(troup.time_completed)
+      .pure-u-3-5
+        for count, name in troup
+          if util.unitsInformation[name] && count > 0
+            span.troup-unit
+              +unitImage(name)
+              =count
+    .pure-g
+      .progress-container
+          .progress(style='width:' + progress  + '%;opacity:' +  1 / Math.sqrt(distance) + ';' , class=troup.direction)
+
+
+mixin target(village, target, util)
+  .building
+    .pure-g
+      .pure-u-1-3.neighbour
+        = target.neighbour.name.substr(0, 20)
+      .pure-u-1-4
+        = target.neighbour.x + "-" + target.neighbour.y
+        = ' [' + Math.floor(target.distance) + ']'
+      .pure-u-1-8
+        .value= Math.floor(target.neighbour.points) + " p"
+      .pure-u-1-6
+        .value= Math.floor(target.expectedTotalResources) + " $"
+      .pure-u-1-8
+        .value= Math.floor(target.maxToSteal) + " $"
+
+
+mixin village(village, util)
+  .village(class=village.underAttack? 'villageAttacked': '')
+    .pure-g
+      .pure-u-1-1.name
+        = '[' + village.id + '] '
+        span(class=village.underAttack? 'limit': '')= village.name + ' (' + village.x + ' - ' + village.y + ') - '
+        a(href='/village/' + village.id + '/attack/' + (village.attackMode == 'on' ? 'off' : 'on'))= (village.attackMode == "on" ? 'Atk' : 'Def') + ' mode'
+        span(class=village.loyalty < 80 ? "limit" : "")= " - " + Math.floor(village.loyalty) + " "
+        = " - " + village.points
+    .pure-g
+      - var highLimit = village.storage/5*4;
+      .pure-u-1-4
+        img(class='resource-image' src='http://wiki.en.tribalwars2.com/images/d/df/Wood.png')
+        span.value(class=village.resources.wood > highLimit ? "limit":"")= Math.floor(village.resources.wood)
+      .pure-u-1-4
+        img(class='resource-image' src='http://wiki.en.tribalwars2.com/images/a/a2/Clay.png')
+        span.value(class=village.resources.clay > highLimit ? "limit":"")= Math.floor(village.resources.clay)
+      .pure-u-1-4
+        img(class='resource-image' src='http://wiki.en.tribalwars2.com/images/4/45/Iron.png')
+        span.value(class=village.resources.iron > highLimit ? "limit":"")= Math.floor(village.resources.iron)
+      .pure-u-1-4
+        img(class='resource-image' src='http://wiki.en.tribalwars2.com/images/5/5f/Provisions.png')
+        span.value(class=village.resources.food > highLimit ? "limit":"")= Math.floor(village.resources.food) + " / " + Math.floor(village.power('farm'))
+    .pure-g
+      - var highLimit = village.storage/5*4;
+      .pure-u-1-4.resource
+        img(class='resource-image' src='http://wiki.en.tribalwars2.com/images/thumb/2/25/Sitenote_battle.png/40px-Sitenote_battle.png')
+        span.value.limit= village.getTotalAttack()
+      .pure-u-1-4.resource
+        img(class='resource-image' src='http://wiki.en.tribalwars2.com/images/thumb/6/66/Defense.png/30px-Defense.png')
+        span.value= village.getTotalDef('inf')
+      .pure-u-1-4.resource
+        img(class='resource-image' src='http://wiki.en.tribalwars2.com/images/thumb/6/61/Archer_defense.png/30px-Archer_defense.png')
+        span.value= village.getTotalDef('arc')
+      .pure-u-1-4.resource
+        img(class='resource-image' src='http://wiki.en.tribalwars2.com/images/thumb/e/e2/Cavalry_defense.png/30px-Cavalry_defense.png')
+        span.value= village.getTotalDef('kav')
+
+    if village.incomingCommands.length > 0
+      .pure-g
+        .pure-u-1-1.name Incoming
+      .section
+        .pure-g
+          .pure-u-1-1
+            .incoming
+              each command in village.incomingCommands
+                .transport
+                  .pure-g
+                    - var neigh = village.world.neighbourhood[command.origin_village_id];
+                    .pure-u-1-2= command.origin_village_name.substr(0, 30)+ " [" + command.origin_x + "," + command.origin_y + "] - " + (neigh && neigh.points)
+                    .pure-u-1-3= command.origin_character_name.substr(0, 40)
+                    .pure-u-1-6
+                      .value= util.getTime(command.time_completed)
+                  .pure-g
+                    .progress-container
+                      - var distance = Math.floor(util.calculateDistance(village, {x: command.origin_x, y: command.origin_y}));
+                      - var progress = Math.floor(((new Date().getTime()/1000) - command.time_start) / (command.time_completed - command.time_start) * 100);
+                      .progress(style='width:' + progress  + '%;opacity:' +  1 / Math.sqrt(distance) + ';', class="underAttack")
+
+    .section
+      .pure-g
+        .pure-u-2-5
+          each building, name in village.buildings
+            +building(village, building, name)
+        .pure-u-3-5
+          each unit, name in village.units.available_units
+            +unit(unit, name)
+
+          .unit.with-separator
+            .pure-g
+              .pure-u-2-3
+                img(class="unit-image" src="http://wiki.en.tribalwars2.com/images/6/69/SpyMaster.png")
+                = " spy"
+              .pure-u-1-3
+                .value= village.numberSpy() + " / " + village.maxUnlockedSpy()
+
+    .pure-g
+      .pure-u-1-1.name Production
+    .section
+      .pure-g
+        .pure-u-1-1
+          +production(village, util)
+    .pure-g
+      .pure-u-1-1.name
+        = "Recruiting - "
+        span.timing= Math.floor(village.timeUntilNextFreeRecruiting() / (60*60*24)) + " Days"
+    .section
+      .pure-g
+        .pure-u-1-1
+          each queue in village.units.queues.barracks
+            +recruit(queue)
+
+    .pure-g
+      .pure-u-1-1.name Trading
+    .section
+      if village.transports
+        .pure-g
+          .pure-u-1-1
+            .transports
+              each transport in village.transports
+                .transport
+                  .pure-g
+                    .pure-u-1-3= transport.target_village_name.substr(0, 20)
+                    .pure-u-1-6
+                      .value= transport.res_wood
+                    .pure-u-1-6
+                      .value= transport.res_clay
+                    .pure-u-1-6
+                      .value= transport.res_iron
+                    .pure-u-1-6
+                      .value= util.getTime(transport.time_completed)
+                  .pure-g
+                    .progress-container
+                      - var distance = Math.floor(util.calculateDistance(village, {x: transport.target_x, y: transport.target_y}));
+                      - var progress = Math.floor(((new Date().getTime()/1000) - transport.time_start) / (transport.time_completed - transport.time_start) * 100);
+                      .progress(style='width:' + progress  + '%;opacity:' +  1 / Math.sqrt(distance) + ';', class=transport.type)
+
+    .pure-g
+      .pure-u-1-1.name Military Troups
+    .section
+      if village.military
+        .pure-g
+          .pure-u-1-1
+            .recruiting
+              each army in village.military.outgoingArmies
+                +troup(village, army, util)
+
+
+    .pure-g
+      .pure-u-1-1.name Targets
+    .section
+      .pure-g
+        .pure-u-1-1
+          .recruiting
+            each target in village.selectTargetsToAttack(5)
+              +target(village, target, util)
+
+    .pure-g
+      .pure-u-1-1.name Futur Constructions
+    .section
+      .pure-g
+        .pure-u-1-1
+          .recruiting
+            .pure-g
+              .pure-u-1-3
+              .pure-u-1-6 level
+              .pure-u-1-6 cost
+              .pure-u-1-6 time
+              .pure-u-1-6 priority
+            each construction in village.selectBestConstruction()
+              .futur-construction
+                .pure-g
+                  .pure-u-1-3
+                    = construction.id
+                  .pure-u-1-6
+                    = construction.level
+                  .pure-u-1-6
+                    = construction.cost
+                  .pure-u-1-6
+                    = Math.floor(construction.time / 60 / 60) + 'h'
+                  .pure-u-1-6
+                    = Math.floor(construction.priority)
+
+    .pure-g
+      .pure-u-1-1.name Futur Recruits
+    .section
+      .pure-g
+        .pure-u-1-1
+          .recruiting
+            .pure-g
+              .pure-u-1-4
+              .pure-u-1-8 cost
+              .pure-u-1-8 load
+              .pure-u-1-8 time
+              .pure-u-1-8 attack
+              .pure-u-1-8 max
+              .pure-u-1-8 score
+
+            each recruit in village.selectBestRecruit()
+              .futur-recruit
+                .pure-g
+                  .pure-u-1-4
+                    +unitImage(recruit.name)
+                    = " " + recruit.name.substr(0,10)
+                  .pure-u-1-8
+                    = recruit.cost * recruit.max_recruits
+                  .pure-u-1-8
+                    = recruit.load * recruit.max_recruits
+                  .pure-u-1-8
+                    = Math.floor(recruit.build_time * recruit.max_recruits / 60 / 60) + "h"
+                  .pure-u-1-8
+                    = recruit.attack * recruit.max_recruits
+                  .pure-u-1-8
+                    = recruit.max_recruits
+                  .pure-u-1-8
+                    = Math.floor(recruit.ratio)
+
+    .pure-g
+      .pure-u-1-1.name Debug
+    .section
+      .pure-g
+        .pure-u-1-1
+          each message in village.getMessages(20)
+            .message(class=message.receiving?"incoming":"outgoing")
+              .pure-g
+                .pure-u-1-6
+                  .date
+                    = "[" + util.getTime(message.time/1000) + "] "
+                .pure-u-1-3
+                  .date
+                    = message.type
+                .pure-u-1-2
+                  if !message.receiving
+                    each data, name in message.data
+                      if name != 'village_id'
+                        = name + ": " + data + ", "
+
+
+
+
+
+
+doctype html
+html(lang="en")
+  head
+    title TW2 Vision
+    link(rel="stylesheet", href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    style
+      include tw2-web.css
+  body
+    h1 TW2 Vision
+    #container
+      each worldId in ['en4', 'en3', 'en2', 'en1']
+        .world(class=worldId)
+          .worldname= util.WorldNames[worldId]
+          hr
+          each account in accounts
+            each character in account.characters
+              if character.world.id == worldId
+                each village in character.villages
+                  .character
+                    h3= account.name + "[" + util.WorldNames[character.world.id] + "]"
+                    +village(village, util)
+

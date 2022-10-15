@@ -1,0 +1,31 @@
+{
+    "SOCKET_URL": "https://en.tribalwars2.com/",
+    "SOCKET_SECURE": true,
+    "SOCKET_KEY": "msg",
+    "SOCKET_DEBUG": 1,
+    "REPORT_COUNT": 100,
+    "ATTACK_MODE": true,
+    "QUERY_REPORTS": true,
+    "accounts": [
+        {
+            "name": "MyAccount",
+            "password": "MyPassword",
+            "id": 113311,
+            "characters": [
+                {
+                    "world": "en3"
+                }
+            ]
+        },
+        {
+            "name": "My2ndAccount",
+            "password": "MyPassword",
+            "id": 113312,
+            "characters": [
+                {
+                    "world": "en3"
+                }
+            ]
+        }
+    ],
+}

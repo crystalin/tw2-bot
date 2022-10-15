@@ -1,0 +1,158 @@
+#container {
+	font-family: Georgia, 'Times New Roman', Times, serif;
+	font-size: 12px;
+	line-height: 18px;
+	font-stretch: normal;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+}
+
+h3 {
+	text-align:center;
+}
+
+.character {
+	width: 450px;
+	float: left;
+}
+
+.village {
+	background: #FFF0E0;
+	border: 1px solid #FA4;
+	padding: 10px;
+	border-radius: 10px;
+	margin: 10px;
+}
+
+.villageAttacked {
+	background: #FFD0C0;
+}
+
+
+.name {
+	margin-bottom: 5px;
+	border-bottom: 1px solid #FA4;
+	font-weight: bold;
+}
+
+.resource {
+	color: #444;
+	margin-bottom: 15px;
+}
+
+.value {
+	color: #363;
+	text-align: left;
+}
+span.value {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.troup {
+	margin: 3px 0px;
+}
+
+.building {
+
+}
+.building .unit {
+	padding: 3px 5px;
+}
+
+.neighbour {
+	font-size: 12px;
+}
+img.unit-image {
+	display: block;
+	float: left;
+	width: 17px;
+	height: 17px;
+	margin: 0 3px 0 0;
+	border-radius: 4px;
+	border: 0;
+	padding: 0;
+}
+img.resource-image {
+	display: block;
+	float: left;
+	width: 17px;
+	height: 17px;
+	margin: 0 3px 0 0;
+	border-radius: 4px;
+	border: 0;
+	padding: 0;
+}
+
+.section {
+	margin: 0 0 10px 5px;
+}
+
+.troup-unit {
+	display: inline-block;
+	width: 55px
+}
+
+.progress {
+	display: block;
+	height: 2px;
+}
+.neutral {
+	background: #ccc;
+}
+.forward, .trade {
+	background: #C90;
+}
+.back, .return {
+	position: absolute;
+	right: 0px;
+	background: #5C0;
+}
+
+.progress-container {
+	width: 100%;
+	position: relative;
+}
+
+.incoming {
+	color: #A40;
+}
+
+.outgoing {
+	color: #0A4;
+}
+
+.limit {
+	color: #D40;
+}
+
+.needed {
+	color: #D80;
+}
+
+.underAttack {
+	background: #D40;
+	font-weight: bold;
+}
+
+.world {
+	clear: both;
+}
+
+.en1 {
+	background-color: #FEF;
+}
+.en2 {
+	background-color: #EFF;
+}
+.en3 {
+	background-color: #EEF;
+}
+.en4 {
+	background-color: #EFE;
+}
+
+.with-separator {
+	margin-top: 18px;
+}
